@@ -1,0 +1,295 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>15 Puzzle</title>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="container">
+      <h1>Puzzle 15</h1>
+      <div id="board-time">00:00</div>
+      <div id="container-play">
+        <a id="play" href="javascript:void(0)">Click to play</a>
+      </div>
+      <div id="alert_puzzle"></div>
+      <div id="puzzle">
+        <div node="1" class="node-puzzle row-1 col-1">1</div>
+        <div node="2" class="node-puzzle row-1 col-2">2</div>
+        <div node="3" class="node-puzzle row-1 col-3">3</div>
+        <div node="4" class="node-puzzle row-1 col-4">4</div>
+        <div node="5" class="node-puzzle row-2 col-1">5</div>
+        <div node="6" class="node-puzzle row-2 col-2">6</div>
+        <div node="7" class="node-puzzle row-2 col-3">7</div>
+        <div node="8" class="node-puzzle row-2 col-4">8</div>
+        <div node="9" class="node-puzzle row-3 col-1">9</div>
+        <div node="10" class="node-puzzle row-3 col-2">10</div>
+        <div node="11" class="node-puzzle row-3 col-3">11</div>
+        <div node="12" class="node-puzzle row-3 col-4">12</div>
+        <div node="13" class="node-puzzle row-4 col-1">13</div>
+        <div node="14" class="node-puzzle row-4 col-2">14</div>
+        <div node="15" class="node-puzzle row-4 col-3">15</div>
+        <div node="0" class="node-puzzle row-4 col-4 node-puzzle-zero"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+<style>
+*{
+  padding:0px;
+  margin:0px;
+}
+html{
+  width:100%;
+  height:100%;
+}
+body{
+  height:100%;
+  width:100%;
+}
+html > body {
+     height: 100%;
+}
+#wrapper {
+  width:100%;
+  margin:0 auto;
+}
+#wrapper a {
+  text-align:center;
+}
+#container {
+  font-size:16px;
+  width:300px;
+  margin:50px auto 0;
+  text-align:center;
+}
+#container h1 {
+  color:#276D8C;
+}
+#puzzle {
+  height:242px;
+  width:242px;
+  position:relative;
+  border:2px solid #757575;
+  margin:0 auto 25px;
+}
+#puzzle .node-puzzle {
+  width: 58px;
+  height: 58px;
+  border: 2px solid white;
+  position: absolute;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 20px;
+  font-size: 36px;
+  line-height: 60px;
+  background-color: #3B9AFF;
+  z-index: 100;
+  cursor: pointer;
+  user-select: none;
+}
+#puzzle .node-puzzle-zero {
+  background-color:white !important;
+  z-index: 50;
+}
+#puzzle > .row-1 {
+  top: 0;
+}
+#puzzle > .row-2 {
+  top: 60px;
+}
+#puzzle > .row-3 {
+  top: 120px;
+}
+#puzzle > .row-4 {
+  top: 180px;
+}
+#puzzle > .col-1 {
+  left: 0;
+}
+#puzzle > .col-2 {
+  left: 60px;
+}
+#puzzle > .col-3 {
+  left: 120px;
+}
+#puzzle > .col-4 {
+  left: 180px;
+}
+#container-play{
+  margin: 10px 0;
+  text-align: center;
+  height:50px;
+}
+#play{
+  width:150px;
+  height:50px;
+  border:2px solid #3f4f2e;
+  text-align:center;
+  text-decoration:none;
+  font-weight:600;
+  font-size:20px;
+  background-color:#689b37;
+  display: inline-block;
+  color: white;
+  text-align: center;
+  line-height: 48px;
+  border-radius: 3px;
+}
+#alert_puzzle {
+  font-size: 16px;
+  color: coral;
+}
+</style>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+
+var matrix = [
+  [1, 2, 3, 4],
+  [5, 6, 7, 8],
+  [9, 10, 11, 12],
+  [13, 14, 15, 0],
+];
+
+var secs = 0;
+var currentSecs = 0;
+var currentMins = 0;
+var timer;
+
+$("#play").bind("click",function(){
+  initialize();
+  beginTime();
+  $("#alert_puzzle").text("");
+})
+
+$("#puzzle .node-puzzle").bind("click",function() {
+  if(secs > 0){
+    var obj = $(this);
+    move(obj);
+  }
+})
+
+function initialize(){
+  var arrRandomNode = shuffleMatrix();
+
+  var count = 0;
+  for(var i = 0; i < 4; i++) {
+    for(var j = 0; j < 4; j++) {
+      var node = arrRandomNode[count];
+      matrix[i][j] = node;
+
+      if (i == 3 && j == 3) {
+        matrix[i][j] = 0;
+      }
+
+      $("#puzzle .node-puzzle[node=" + node + "]").css("top", i * 60 + "px");
+      $("#puzzle .node-puzzle[node=" + node + "]").css("left", j * 60 + "px");
+      count++;
+    }
+  }
+}
+
+function shuffleMatrix(){
+  var arr = [];
+  while(arr.length < 15){
+    var r = Math.floor(Math.random() * 15) + 1;
+    if(arr.indexOf(r) === -1) arr.push(r);
+  }
+
+  return arr;
+}
+
+function beginTime() {
+  secs = 0;
+  currentSecs = 0;
+  currentMins = 0;
+  clearTimeout(timer);
+  intervalTime();
+}
+
+function intervalTime() {
+  currentMins = Math.floor(secs / 60);
+  currentSecs = secs % 60;
+
+  if(currentMins <= 9) {
+    currentMins = "0" + currentMins;
+  }
+
+  if(currentSecs <= 9) {
+    currentSecs = "0" + currentSecs;
+  }
+
+  secs++;
+  $("#board-time").text(currentMins + ":" + currentSecs);
+  timer = setTimeout('intervalTime()', 1000);
+  console.log(secs);
+}
+
+function move(obj) {
+  var nodeValue = parseFloat(obj.attr("node"));
+  var win = false;
+
+  for(var i = 0; i < 4; i++) {
+    for(var j = 0; j < 4; j++) {
+      if(matrix[i][j] == nodeValue) {
+        if(j > 0 && matrix[i][j-1] == 0) {
+          $("#puzzle .node-puzzle[node=0]").css("left", j * 60 + "px");
+          obj.animate({
+            'left': (j - 1) * 60 + 'px'
+          }, 300);
+
+          matrix[i][j - 1] = nodeValue;
+          matrix[i][j] = 0;
+
+        } else if(j < 3 && matrix[i][j + 1] == 0) {
+          $("#puzzle .node-puzzle[node=0]").css("left",j * 60 + "px");
+          obj.animate({
+            'left': (j + 1) * 60 + 'px'
+          }, 300);
+
+          matrix[i][j + 1] = nodeValue;
+          matrix[i][j] = 0;
+
+        } else if(i > 0 && matrix[i - 1][j] == 0) {
+          $("#puzzle .node-puzzle[node=0]").css("top", i * 60 + "px");
+          obj.animate({
+            'top': (i - 1) * 60 + 'px'
+          },300);
+
+          matrix[i-1][j] = nodeValue;
+          matrix[i][j] = 0;
+
+        } else if(i<3 && matrix[i+1][j]==0) {
+          $("#puzzle .node-puzzle[node=0]").css("top", i * 60 + "px");
+          obj.animate({
+            'top': (i + 1) * 60 + 'px'
+          },300);
+
+          matrix[i + 1][j] = nodeValue;
+          matrix[i][j]=0;
+        }
+
+        win = checkWin();
+        if (win){
+          break;
+        }
+
+        return; 
+      }
+    }
+  }
+}
+
+function checkWin(){
+  var win =false;
+  var winString = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0";
+  var matrixStr = matrix.toString();
+
+  if(winString == matrixStr) {
+    clearTimeout(timer);
+    $("#alert_puzzle").text("Win!. Your times: " + $("#board-time").text());
+  }
+}
+</script>
